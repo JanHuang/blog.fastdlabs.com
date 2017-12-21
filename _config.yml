@@ -3,7 +3,7 @@ permalink:      /:year-:month-:day/:title
 
 # Setup
 title:          fastdlabs
-paginate:       5
+paginate:       10
 baseurl:        ""
 url:            "http://fastdlabs.com/"
 
@@ -17,14 +17,14 @@ markdown:       kramdown
 
 # About
 author:
-  name:         Jan Huang
+  name:         JanHuang
   url:          https://fastdlabs.com/
   email:        bboyjanhuang@gmail.com
 
 # Custom vars
 version:        3.4.1
 github:
-  repo:         https://github.com/chesterhow/tale
+  repo:         https://github.com/fastdlabs
 
 # Gems
 plugins:
