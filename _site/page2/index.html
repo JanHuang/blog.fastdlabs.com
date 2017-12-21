@@ -33,28 +33,40 @@
     <main>
       <div class="catalogue">
   
-    <a href="/2017-03-06/the-mystery-of-the-filler-post" class="catalogue-item">
+    <a href="/2017-12-12/create-gatewray" class="catalogue-item">
       <div>
-        <time datetime="2017-03-06 00:00:00 +0800" class="catalogue-time">March 06, 2017</time>
-        <h1 class="catalogue-title">The Mystery of the Filler Post</h1>
+        <time datetime="2017-12-12 00:00:00 +0800" class="catalogue-time">December 12, 2017</time>
+        <h1 class="catalogue-title">FastD最佳实践三: 创建API网关</h1>
         <div class="catalogue-line"></div>
 
         <p>
-          Hornswaggle measured fer yer chains chase run a shot across the bow Chain Shot flogging Pirate Round galleon rope’s end aft. Prow fire in the hole keel rum Barbary Coast...
+          构建完成 API 服务，配置中心之后，架构图大致如下:  我们为何需要网关 引用 别人 的一句话:  我们总是听到编排这个词，所以我喜欢这张幻灯片 – 它展示了一个乐队，然后有个指挥家，下面一堆人（微型服务）演奏自己的乐器。这个指挥家（API网关）可以以某种方式来协调我们的架构如何处理请求。  我们需要将业务或服务放置在网关背后，由网关统一处理请求入口，本身由多个入口的处理变成了一个入口，由网关进行统一调度。  有一个很nice的事情，就是API网关让我们的客户端不用再需要知道和关心模块的地址（address）了。网关负责来搞这些事情，你只需要知道网关就好了。你可以去改变实现而且还可以改变API接口。不过通常来说，你改变接口后，会增加客户端出问题的风险。  还有很多有趣的功能，有兴趣的朋友可以参考:  微服务与API 网关（上）: 为什么需要API网关？ 微服务与API...
         </p>
 
       </div>
     </a>
   
-    <a href="/2017-03-05/pagination-post" class="catalogue-item">
+    <a href="/2017-12-12/create-configure" class="catalogue-item">
       <div>
-        <time datetime="2017-03-05 00:00:00 +0800" class="catalogue-time">March 05, 2017</time>
-        <h1 class="catalogue-title">Pagination Post</h1>
+        <time datetime="2017-12-12 00:00:00 +0800" class="catalogue-time">December 12, 2017</time>
+        <h1 class="catalogue-title">FastD最佳实践二: 创建配置中心</h1>
         <div class="catalogue-line"></div>
 
         <p>
-          Here we see Tale’s pagination feature in action. It is set to 5 posts per page by default. Feel free to change this number in the _config.yml file!
+          过去专门做了一篇文档来构建配置中心，基于 zookeeper 的配置中心。 环境要求及构建步骤可参考: QConf搭建配置中心 随着业务增长，部署的机器可能会随着增长，增加配置难度和维护难度。配置会因为机器的增多而变得更加容易出错，为了解决这个问题，于是我们引入了 360 开发的 Qconf 来解决这个问题，目前已经稳定用于线上环境当中。 安装 qconf 扩展包 composer require fastd/qconf-service-provider -vvv  扩展包有点特殊，不需要任何的注册操作，当执行完 composer 依赖之后，会自动加载辅助函数，仅需对配置中心进行读取配置即可。 提供两个函数: qconf_get_value...
+        </p>
 
+      </div>
+    </a>
+  
+    <a href="/2017-12-12/create-api" class="catalogue-item">
+      <div>
+        <time datetime="2017-12-12 00:00:00 +0800" class="catalogue-time">December 12, 2017</time>
+        <h1 class="catalogue-title">FastD最佳实践一: 创建API</h1>
+        <div class="catalogue-line"></div>
+
+        <p>
+          FastD 是一个专门针对 API 应用层而生的一个 PHP 应用框架，提供良好的中间件，路由以及支持 swoole 扩展运行，从而具体良好的性能条件。 创建项目 composer create-project fastd/dobee api -vvv  创建一个为 API 的项目。 运行第一个程序 进入命令行模式 php -S...
         </p>
 
       </div>
@@ -75,7 +87,7 @@
 
     <footer>
       <span>
-        &copy; <time datetime="2017-12-12 14:24:38 +0800">2017</time> Jan Huang. Made with Jekyll using the <a href="https://github.com/chesterhow/tale/">Tale</a> theme.
+        &copy; <time datetime="2017-12-21 12:37:32 +0800">2017</time> Jan Huang. Made with Jekyll using the <a href="https://github.com/chesterhow/tale/">Tale</a> theme.
       </span>
     </footer>
   </body>

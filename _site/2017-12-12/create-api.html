@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>
+    
+      FastD最佳实践一: 创建API &middot; fastdlabs
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700">
+</head>
+
+
+  <body>
+    <nav class="nav">
+      <div class="nav-container">
+        <a href="/">
+          <h2 class="nav-title">fastdlabs</h2>
+        </a>
+        <ul>
+          <li><a href="/about">About</a></li>
+          <li><a href="/">Posts</a></li>
+        </ul>
+    </div>
+  </nav>
+
+    <main>
+      <div class="post">
+  <div class="post-info">
+    <span>Written by</span>
+    
+        JanHuang
+    
+
+    
+      <br>
+      <span>on&nbsp;</span><time datetime="2017-12-12 00:00:00 +0800">December 12, 2017</time>
+    
+  </div>
+
+  <h1 class="post-title">FastD最佳实践一: 创建API</h1>
+  <div class="post-line"></div>
+
+  <p>FastD 是一个专门针对 API 应用层而生的一个 PHP 应用框架，提供良好的中间件，路由以及支持 swoole 扩展运行，从而具体良好的性能条件。</p>
+
+<h4 id="创建项目">创建项目</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>composer create-project fastd/dobee api -vvv
+</code></pre></div></div>
+
+<p>创建一个为 API 的项目。</p>
+
+<h4 id="运行第一个程序">运行第一个程序</h4>
+
+<p>进入命令行模式</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>php -S localhost:9876 -t web
+</code></pre></div></div>
+
+<p>访问 <code class="highlighter-rouge">localhost:9876</code></p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="s2">"msg"</span><span class="p">:</span><span class="s2">"hello dobee"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<h4 id="执行流程">执行流程</h4>
+
+<p>点击: <a href="http://fastdlabs.com/blog/2">FastD设计详解</a></p>
+
+<h4 id="实现第一个路由">实现第一个路由</h4>
+
+<h5 id="1-创建控制器">1. 创建”控制器”</h5>
+
+<p>通过命令行</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>php bin/console controller:create {name}
+</code></pre></div></div>
+
+<p>命令行会自动创建 CURD 多个操作方法，由开发者手动添加操作逻辑。</p>
+
+<p>手动创建</p>
+
+<p>MeController.php</p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+
+<span class="k">namespace</span> <span class="nx">Controller</span><span class="p">;</span>
+
+
+<span class="k">use</span> <span class="nx">FastD\Http\ServerRequest</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">MeController</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">me</span><span class="p">(</span><span class="nx">ServerRequest</span> <span class="nv">$request</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">json</span><span class="p">([</span>
+            <span class="s1">'name'</span> <span class="o">=&gt;</span> <span class="s1">'janhuang'</span>
+        <span class="p">]);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h5 id="2-添加路由地址">2. 添加路由地址</h5>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+
+<span class="nx">route</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">'/'</span><span class="p">,</span> <span class="s1">'WelcomeController@welcome'</span><span class="p">);</span>
+<span class="nx">route</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">'/hello/{name}'</span><span class="p">,</span> <span class="s1">'WelcomeController@sayHello'</span><span class="p">);</span>
+<span class="nx">route</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">'/who'</span><span class="p">,</span> <span class="s1">'MeController@me'</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h5 id="3-调用">3. 调用</h5>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl -i http://127.0.0.1:9876/who
+</code></pre></div></div>
+
+<blockquote>
+  <p>response</p>
+</blockquote>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"janhuang"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>完成最第一个路由。</p>
+
+<h4 id="给应用添加单元测试">给应用添加单元测试</h4>
+
+<p>我仍热认为测试是一个非常重要的环节，也是一个优秀开发者一个重要品质之一。</p>
+
+<p>如果其中涉及数据库测试，可以参考: <a href="https://github.com/JanHuang/fastD/blob/master/docs/zh_CN/3-6-testcase.md#数据库测试">数据库测试</a></p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+
+<span class="k">namespace</span> <span class="nx">Testing</span><span class="p">;</span>
+
+
+<span class="k">use</span> <span class="nx">FastD\TestCase</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">WelcomeControllerTest</span> <span class="k">extends</span> <span class="nx">TestCase</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">testSayHello</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="nv">$request</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">request</span><span class="p">(</span><span class="s1">'GET'</span><span class="p">,</span> <span class="s1">'/'</span><span class="p">);</span>
+        <span class="nv">$response</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">app</span><span class="o">-&gt;</span><span class="na">handleRequest</span><span class="p">(</span><span class="nv">$request</span><span class="p">);</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">isSuccessful</span><span class="p">(</span><span class="nv">$response</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>可以给你的应用API添加格式各样的测试，来验证程序的有效性。</p>
+
+<h4 id="给-api-添加公共缓存">给 API 添加公共缓存</h4>
+
+<p><strong>何为公共缓存？</strong></p>
+
+<p>公共缓存的灵感来自于 <a href="https://varnish-cache.org/">varnish</a>，当用户发起非 <code class="highlighter-rouge">GET</code> 请求的时候，进行缓存处理并返回(如果有的话)，其他请求一律穿透，交给底层处理。</p>
+
+<p>缓存也是一个前置中间件，使用方式与日常操作保持一致。</p>
+
+<p>文档: <a href="https://github.com/JanHuang/fastD/blob/master/docs/zh_CN/3-2-middleware.md">中间件</a></p>
+
+<p><code class="highlighter-rouge">config/app.php</code></p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+
+<span class="k">return</span> <span class="p">[</span>
+    <span class="c1">// code...
+</span>    <span class="sd">/**
+     * Http middleware
+     */</span>
+    <span class="s1">'middleware'</span> <span class="o">=&gt;</span> <span class="p">[</span>
+        <span class="c1">// code
+</span>        <span class="s1">'common.cache'</span> <span class="o">=&gt;</span> <span class="p">[</span><span class="nx">\FastD\Middleware\CacheMiddleware</span><span class="o">::</span><span class="na">class</span><span class="p">]</span>
+    <span class="p">],</span>
+<span class="p">];</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">config/routes.php</code></p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+
+<span class="nx">route</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">'/'</span><span class="p">,</span> <span class="s1">'WelcomeController@welcome'</span><span class="p">);</span>
+<span class="nx">route</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">'/hello/{name}'</span><span class="p">,</span> <span class="s1">'WelcomeController@sayHello'</span><span class="p">);</span>
+<span class="nx">route</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">'/who'</span><span class="p">,</span> <span class="s1">'MeController@me'</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">withMiddleware</span><span class="p">(</span><span class="s1">'common.cache'</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>完成配置后，请求路由地址</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl -i http://localhost:9876/who
+
+HTTP/1.1 200
+Host: localhost:9876
+Connection: close
+X-Powered-By: PHP/7.0.0
+Content-Type: application/json; charset=UTF-8
+X-Cache: ee4d94f352cb03116b61ce9158720ebf
+Expires: Tue, 08 Aug 2017 10:58:21 GMT
+</code></pre></div></div>
+
+<p>会产生 <code class="highlighter-rouge">X-Cache</code> 新的响应头，用于代表缓存生效。</p>
+
+<h4 id="basic-auth">Basic Auth</h4>
+
+<p>大部分 API 中，都需要对请求来源进行一定的鉴权处理，由于框架已经集成了简单的 Basic auth，使用方法与上述保持一致。</p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+
+<span class="nx">route</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">'/'</span><span class="p">,</span> <span class="s1">'WelcomeController@welcome'</span><span class="p">);</span>
+<span class="nx">route</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">'/hello/{name}'</span><span class="p">,</span> <span class="s1">'WelcomeController@sayHello'</span><span class="p">);</span>
+<span class="nx">route</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">'/who'</span><span class="p">,</span> <span class="s1">'MeController@me'</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">withMiddleware</span><span class="p">([</span><span class="s1">'basic.auth'</span><span class="p">,</span> <span class="s1">'common.cache'</span><span class="p">]);</span>
+</code></pre></div></div>
+
+<h4 id="为-api-server-加速">为 API Server 加速</h4>
+
+<p>众所周知，<a href="http://swoole.com/">swoole</a> 为 PHP 提供了良好的性能体验和网络通信体验，而框架中也无缝整合 swoole，为框架、服务提供良好体验做了一个铺垫，现在，你只需要配置IP、端口、swoole常用配置，即可无痕启动以 swoole 服务器，为你的 API Server 进行加速处理。</p>
+
+<p><code class="highlighter-rouge">config/server.php</code></p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="sd">/**
+ * @author    jan huang &lt;bboyjanhuang@gmail.com&gt;
+ * @copyright 2016
+ *
+ * @link      https://www.github.com/janhuang
+ * @link      http://www.fast-d.cn/
+ */</span>
+
+<span class="k">return</span> <span class="p">[</span>
+    <span class="s1">'host'</span> <span class="o">=&gt;</span> <span class="s1">'http://'</span><span class="o">.</span><span class="nx">get_local_ip</span><span class="p">()</span><span class="o">.</span><span class="s1">':9527'</span><span class="p">,</span>
+    <span class="s1">'class'</span> <span class="o">=&gt;</span> <span class="nx">\FastD\Servitization\Server\HTTPServer</span><span class="o">::</span><span class="na">class</span><span class="p">,</span>
+    <span class="s1">'options'</span> <span class="o">=&gt;</span> <span class="p">[</span>
+        <span class="s1">'user'</span> <span class="o">=&gt;</span> <span class="s1">'nobody'</span><span class="p">,</span>
+        <span class="s1">'group'</span> <span class="o">=&gt;</span> <span class="s1">'nogroup'</span><span class="p">,</span>
+        <span class="s1">'pid_file'</span> <span class="o">=&gt;</span> <span class="nx">__DIR__</span> <span class="o">.</span> <span class="s1">'/../runtime/pid/'</span> <span class="o">.</span> <span class="nx">app</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">getName</span><span class="p">()</span> <span class="o">.</span> <span class="s1">'.pid'</span><span class="p">,</span>
+        <span class="s1">'log_file'</span> <span class="o">=&gt;</span> <span class="nx">__DIR__</span> <span class="o">.</span> <span class="s1">'/../runtime/logs/'</span> <span class="o">.</span> <span class="nx">app</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">getName</span><span class="p">()</span> <span class="o">.</span> <span class="s1">'.pid'</span><span class="p">,</span>
+        <span class="s1">'log_level'</span> <span class="o">=&gt;</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="s1">'worker_num'</span> <span class="o">=&gt;</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="s1">'task_worker_num'</span> <span class="o">=&gt;</span> <span class="mi">20</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="s1">'processes'</span> <span class="o">=&gt;</span> <span class="p">[</span>
+
+    <span class="p">],</span>
+    <span class="s1">'listeners'</span> <span class="o">=&gt;</span> <span class="p">[</span>
+
+    <span class="p">],</span>
+<span class="p">];</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">get_local_ip</code> 函数为了默认或者本地内网ip，如果你的API是对外开放的，请修改为您的外网ip或者 <code class="highlighter-rouge">0.0.0.0</code>。</p>
+
+<p><code class="highlighter-rouge">options</code> 参数为 swoole 扩展配置参数。请参考: <a href="https://wiki.swoole.com/wiki/page/274.html">swoole配置</a></p>
+
+<h5 id="启动">启动</h5>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>php bin/server start
+</code></pre></div></div>
+
+<h5 id="守护进程">守护进程</h5>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>php bin/server start -d
+</code></pre></div></div>
+
+<h5 id="停止">停止</h5>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">php</span> <span class="nx">bin</span><span class="o">/</span><span class="nx">server</span> <span class="nx">stop</span>
+</code></pre></div></div>
+
+
+</div>
+
+<div class="pagination">
+  
+    <a href="/2017-12-12/create-configure" class="left arrow">&#8592;</a>
+  
+  
+
+  <a href="#" class="top">Top</a>
+</div>
+
+    </main>
+
+    <footer>
+      <span>
+        &copy; <time datetime="2017-12-21 12:37:32 +0800">2017</time> Jan Huang. Made with Jekyll using the <a href="https://github.com/chesterhow/tale/">Tale</a> theme.
+      </span>
+    </footer>
+  </body>
+</html>

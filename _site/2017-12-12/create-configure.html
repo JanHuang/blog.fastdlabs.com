@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>
+    
+      FastD最佳实践二: 创建配置中心 &middot; fastdlabs
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700">
+</head>
+
+
+  <body>
+    <nav class="nav">
+      <div class="nav-container">
+        <a href="/">
+          <h2 class="nav-title">fastdlabs</h2>
+        </a>
+        <ul>
+          <li><a href="/about">About</a></li>
+          <li><a href="/">Posts</a></li>
+        </ul>
+    </div>
+  </nav>
+
+    <main>
+      <div class="post">
+  <div class="post-info">
+    <span>Written by</span>
+    
+        JanHuang
+    
+
+    
+      <br>
+      <span>on&nbsp;</span><time datetime="2017-12-12 00:00:00 +0800">December 12, 2017</time>
+    
+  </div>
+
+  <h1 class="post-title">FastD最佳实践二: 创建配置中心</h1>
+  <div class="post-line"></div>
+
+  <p>过去专门做了一篇文档来构建配置中心，基于 <a href="https://zookeeper.apache.org/">zookeeper</a> 的配置中心。</p>
+
+<p>环境要求及构建步骤可参考: <a href="https://segmentfault.com/a/1190000008949515">QConf搭建配置中心</a></p>
+
+<p>随着业务增长，部署的机器可能会随着增长，增加配置难度和维护难度。配置会因为机器的增多而变得更加容易出错，为了解决这个问题，于是我们引入了 360 开发的 Qconf 来解决这个问题，目前已经稳定用于线上环境当中。</p>
+
+<h4 id="安装-qconf-扩展包">安装 qconf 扩展包</h4>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>composer require fastd/qconf-service-provider -vvv
+</code></pre></div></div>
+
+<p>扩展包有点特殊，不需要任何的注册操作，当执行完 composer 依赖之后，会自动加载辅助函数，仅需对配置中心进行读取配置即可。</p>
+
+<p>提供两个函数:</p>
+
+<p><code class="highlighter-rouge">qconf_get_value</code> 获取对应节点值</p>
+
+<p><code class="highlighter-rouge">qconf_get_values</code> 获取对应节点值数组</p>
+
+<h4 id="修改配置文件">修改配置文件</h4>
+
+<p><code class="highlighter-rouge">config/config.php</code></p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+
+<span class="k">return</span> <span class="p">[</span>
+    <span class="s1">'demo'</span> <span class="o">=&gt;</span> <span class="nx">qconf_get_value</span><span class="p">(</span><span class="s1">'/demo/test'</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="s1">'abc'</span><span class="p">)</span>
+<span class="p">];</span>
+</code></pre></div></div>
+
+<p>值得注意的是，如果万一不小心，qconf 出现错误或者异常无法运行的时候，则需要保留一个默认配置项，这个小动作可能会在你系统出现异常的时候救你一命。</p>
+
+<h4 id="测试配置中心">测试配置中心</h4>
+
+<p>完成基础配置后，需要对配置中心进行简单的测试。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>php bin/console config:dump config
+</code></pre></div></div>
+
+<p>结果会将配置文件进行输出，来确认是否可用。</p>
+
+<p>最终架构图如下:</p>
+
+<p><img src="storage/QQ20170810-120757%402x.png" alt="QQ20170810 120757%402x" /></p>
+
+<p>无论扩展多少个业务应用，仅需要一个配置中心即可完成多处配置修改。</p>
+
+
+</div>
+
+<div class="pagination">
+  
+    <a href="/2017-12-12/create-gatewray" class="left arrow">&#8592;</a>
+  
+  
+    <a href="/2017-12-12/create-api" class="right arrow">&#8594;</a>
+  
+
+  <a href="#" class="top">Top</a>
+</div>
+
+    </main>
+
+    <footer>
+      <span>
+        &copy; <time datetime="2017-12-21 12:37:32 +0800">2017</time> Jan Huang. Made with Jekyll using the <a href="https://github.com/chesterhow/tale/">Tale</a> theme.
+      </span>
+    </footer>
+  </body>
+</html>

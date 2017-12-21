@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>
+    
+      FastD最佳实践五: 创建ELK日志分析 &middot; fastdlabs
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700">
+</head>
+
+
+  <body>
+    <nav class="nav">
+      <div class="nav-container">
+        <a href="/">
+          <h2 class="nav-title">fastdlabs</h2>
+        </a>
+        <ul>
+          <li><a href="/about">About</a></li>
+          <li><a href="/">Posts</a></li>
+        </ul>
+    </div>
+  </nav>
+
+    <main>
+      <div class="post">
+  <div class="post-info">
+    <span>Written by</span>
+    
+        JanHuang
+    
+
+    
+      <br>
+      <span>on&nbsp;</span><time datetime="2017-12-12 00:00:00 +0800">December 12, 2017</time>
+    
+  </div>
+
+  <h1 class="post-title">FastD最佳实践五: 创建ELK日志分析</h1>
+  <div class="post-line"></div>
+
+  <p>过去咱们开发中，对日志这个环节其实并不太重视，直到有一天，应用出现异常，这个时候才想起来“日志”，但很可惜，为时已晚。</p>
+
+<p>咱们做运维和开发，除了救火，还需要防火，因此一些防范的意识也是非常重要的。</p>
+
+<h3 id="效果图">效果图</h3>
+
+<p><img src="https://sfault-image.b0.upaiyun.com/324/593/3245932138-59b7c152ac5b7_articlex" alt="" /></p>
+
+<h3 id="安装elk">安装ELK</h3>
+
+<p>安装 <a href="https://www.elastic.co">ELK</a> 是相对简单的，但是后期也需要对其进行优化，适当考虑运维人力，如果觉得个人可以折腾的不放可以尝试。</p>
+
+<p>如果已经存在 ELK 环境，可以直接跳过，进行框架日志配置环节。</p>
+
+<p>点击前往: <a href="https://kibana.logstash.es/content/">中文地址</a></p>
+
+<h5 id="先决条件-java-8">先决条件: Java 8</h5>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo add-apt-repository -y ppa:webupd8team/java
+sudo apt-get update
+sudo apt-get -y install oracle-java8-installer
+</code></pre></div></div>
+
+<h5 id="简单安装-elasticsearch">简单安装 elasticsearch</h5>
+
+<p>下载地址: <a href="https://www.elastic.co/downloads/elasticsearch">elasticsearch</a></p>
+
+<p>下载 zip 或者其他都可以。</p>
+
+<p>解压压缩包。执行:</p>
+
+<blockquote>
+  <p>运行前请配置好系统参数。有一定要求，如果启动失败，仔细留意错误信息，对应调整即可。</p>
+</blockquote>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bin/elasticsearch
+</code></pre></div></div>
+
+<p>验证:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl http://localhost:9200/
+</code></pre></div></div>
+
+<h5 id="安装-kibana">安装 kibana</h5>
+
+<p>下载地址: <a href="https://www.elastic.co/downloads/kibana">kibana</a></p>
+
+<p>设置 elasticsearch url 地址，也就是刚才的 localhost:9200 (默认)</p>
+
+<p>运行: <code class="highlighter-rouge">./bin/kibana</code></p>
+
+<p>打开: http://localhost:5601 访问面板</p>
+
+<h5 id="安装-logstash">安装 logstash</h5>
+
+<p>下载地址: <a href="https://www.elastic.co/downloads/logstash">logstash</a></p>
+
+<p>配置文件: <code class="highlighter-rouge">config/logstash.conf</code></p>
+
+<p>可参照:</p>
+
+<div class="language-config highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">input</span> {
+    <span class="n">file</span> {
+        <span class="n">type</span> =&gt; <span class="s2">"fastd"</span>
+        <span class="n">path</span> =&gt; [<span class="s2">"log file path"</span>]
+    }
+}
+
+<span class="n">filter</span> {
+    <span class="n">json</span> {
+        <span class="n">source</span> =&gt; <span class="s2">"message"</span>
+    }
+}
+
+<span class="n">output</span> {
+    <span class="c"># stdout { codec =&gt; rubydebug }
+</span>    <span class="n">elasticsearch</span> {
+        <span class="n">action</span> =&gt; <span class="s2">"index"</span>
+        <span class="n">hosts</span> =&gt; <span class="s2">"127.0.0.1:9200"</span>
+        <span class="n">index</span> =&gt; <span class="s2">"fastd"</span>
+    }
+}
+</code></pre></div></div>
+
+<p>运行: <code class="highlighter-rouge">bin/logstash -f config/logstash.conf</code></p>
+
+<p><code class="highlighter-rouge">stdout</code> 作为标准输出，可以通过 <code class="highlighter-rouge">stdout { codec =&gt; rubydebug }</code> 对采集数据进行调试。</p>
+
+<h3 id="处理-php-应用日志-fastd-32新特性">处理 php 应用日志 (FastD 3.2新特性)</h3>
+
+<p>庆幸我们有这么一个需求，也能将工作经验总结并形成最终的解决方案分享给大家。</p>
+
+<p><strong>!!3.1 版本处理方案</strong></p>
+
+<p>新建格式日志文件。然后往下按照步骤进行处理即可(命名空间自定义，添加到日志配置中的第四个参数中)。</p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="k">namespace</span> <span class="nx">Logger\Formatter</span><span class="p">;</span>
+
+<span class="k">use</span> <span class="nx">Monolog\Formatter\LogstashFormatter</span><span class="p">;</span>
+
+<span class="sd">/**
+ * Class StashFormatter.
+ */</span>
+<span class="k">class</span> <span class="nc">StashFormatter</span> <span class="k">extends</span> <span class="nx">LogstashFormatter</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">__construct</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">parent</span><span class="o">::</span><span class="na">__construct</span><span class="p">(</span><span class="nx">app</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">getName</span><span class="p">(),</span> <span class="nx">get_local_ip</span><span class="p">(),</span> <span class="kc">null</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">self</span><span class="o">::</span><span class="na">V1</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<p>配置 <code class="highlighter-rouge">app.php</code></p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+
+<span class="k">return</span> <span class="p">[</span>
+    <span class="c1">// code ...
+</span>    <span class="s1">'log'</span> <span class="o">=&gt;</span> <span class="p">[</span>
+        <span class="p">[</span>
+            <span class="nx">\Monolog\Handler\StreamHandler</span><span class="o">::</span><span class="na">class</span><span class="p">,</span>
+            <span class="s1">'info.log'</span><span class="p">,</span>
+            <span class="nx">\FastD\Logger\Logger</span><span class="o">::</span><span class="na">INFO</span><span class="p">,</span>
+            <span class="nx">\FastD\Logger\Formatter\StashFormatter</span><span class="o">::</span><span class="na">class</span><span class="p">,</span>
+        <span class="p">],</span>
+    <span class="p">],</span>
+    <span class="c1">// code ...
+</span><span class="p">];</span>
+</code></pre></div></div>
+
+<p>日志会随着配置进行生成，结果如下:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{"@timestamp":"2017-09-12T15:47:37.189080+08:00","@version":1,"host":"10.1.81.60","message":"sprintf(): Too few arguments","type":"fast-d","channel":"fast-d","level":"ERROR","msg":"sprintf(): Too few arguments","code":0,"file":"/Users/janhuang/Documents/htdocs/me/fastd/fastd/vendor/fastd/routing/src/RouteDispatcher.php","line":78,"trace":["#0 [internal function]: FastD\\Application-&gt;FastD\\{closure}(2, 'sprintf(): Too ...', '/Users/janhuang...', 78, Array)","#1 /Users/janhuang/Documents/htdocs/me/fastd/fastd/vendor/fastd/routing/src/RouteDispatcher.php(78): sprintf('Middleware %s i...')","#2 /Users/janhuang/Documents/htdocs/me/fastd/fastd/vendor/fastd/routing/src/RouteDispatcher.php(60): FastD\\Routing\\RouteDispatcher-&gt;callMiddleware(Object(FastD\\Routing\\Route), Object(FastD\\Http\\ServerRequest))","#3 /Users/janhuang/Documents/htdocs/me/fastd/fastd/src/Application.php(142): FastD\\Routing\\RouteDispatcher-&gt;dispatch(Object(FastD\\Http\\ServerRequest))","#4 /Users/janhuang/Documents/htdocs/me/fastd/fastd/src/Application.php(205): FastD\\Application-&gt;handleRequest(Object(FastD\\Http\\ServerRequest))","#5 /Users/janhuang/Documents/htdocs/me/fastd/fastd/tests/app/web/index.php(15): FastD\\Application-&gt;run()","#6 {main}"]}
+</code></pre></div></div>
+
+<p><strong>忽略上述日志内容，程序看得懂即可</strong></p>
+
+<p>配置 logstash 推送到 elasticsearch.</p>
+
+<p><code class="highlighter-rouge">config/logstash.conf</code>, 需要根据业务场景进行配置，现在显示最简单的配置。</p>
+
+<div class="language-config highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">input</span> {
+    <span class="n">file</span> {
+        <span class="n">type</span> =&gt; <span class="s2">"fastd"</span>
+        <span class="n">path</span> =&gt; [<span class="s2">"log file path"</span>]
+    }
+}
+
+<span class="n">filter</span> {
+    <span class="n">json</span> {
+        <span class="n">source</span> =&gt; <span class="s2">"message"</span>
+    }
+}
+
+<span class="n">output</span> {
+    <span class="n">elasticsearch</span> {
+        <span class="n">action</span> =&gt; <span class="s2">"index"</span>
+        <span class="n">hosts</span> =&gt; <span class="s2">"127.0.0.1:9200"</span>
+        <span class="n">index</span> =&gt; <span class="s2">"fastd"</span>
+    }
+}
+</code></pre></div></div>
+
+<p>配置无误后，开启日志采集</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./bin/logstash -f path/to/logstash.conf
+</code></pre></div></div>
+
+<p>每当日志刷新新增的时候，agent 就会将日志采集推送到 elasticsearch. 如果觉得 ELK 会有卡顿或者性能问题，可能尝试结合 kafka 进行优化。</p>
+
+<p>打开: <code class="highlighter-rouge">http://127.0.0.1:5601/</code>，即可看到刚才 php 应用产生的日志。</p>
+
+<h3 id="总结">总结</h3>
+
+<p>如果 php 应用发生问题，异常而又无法第一时间发现的时候，日志可能是一个很好的切入点，当机器越来越多，应用越来越广泛的时候，日志可能会大量消耗人力，这个时候我们不得不去想办法，一方面解决人力问题，一方面需要提高应用质量。</p>
+
+
+</div>
+
+<div class="pagination">
+  
+    <a href="/2017-12-12/create-monitor" class="left arrow">&#8592;</a>
+  
+  
+    <a href="/2017-12-12/create-gatewray" class="right arrow">&#8594;</a>
+  
+
+  <a href="#" class="top">Top</a>
+</div>
+
+    </main>
+
+    <footer>
+      <span>
+        &copy; <time datetime="2017-12-21 12:37:32 +0800">2017</time> Jan Huang. Made with Jekyll using the <a href="https://github.com/chesterhow/tale/">Tale</a> theme.
+      </span>
+    </footer>
+  </body>
+</html>

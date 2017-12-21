@@ -33,67 +33,66 @@
     <main>
       <div class="catalogue">
   
-    <a href="/2017-12-12/demo" class="catalogue-item">
+    <a href="/2017-12-21/architecture" class="catalogue-item">
+      <div>
+        <time datetime="2017-12-21 00:00:00 +0800" class="catalogue-time">December 21, 2017</time>
+        <h1 class="catalogue-title">浅谈架构</h1>
+        <div class="catalogue-line"></div>
+
+        <p>
+          当架构规划的结果，整理出一堆不同优先级的需求，尤其是质量需求之后，接下来就要思考如何才能最大限度地实现这些需求，这就是架构设计要解决的问题。那么，如何进行架构设计呢？设计到什么程度才合适呢？我从架构思维和架构原则方面来思考架构设计的问题。 架构思维 这里说的架构思维是指进行架构设计时最高层级的思考方式，比如：面向过程、面向对象、面向切面、面向服务等。 面向过程(Procedure Oriented) 面向过程的设计思路就是将问题分解成一个个步骤，按照步骤一步步执行之后，问题就解决了。每一个步骤就是一个子过程，也可以称为一个模块，子过程还可以继续拆分成更多更细的子过程。因此，面向过程的设计核心就是过程分析、功能分解，一般采用自顶向下、逐步求精的分解方式。一个大的程序可以分解成多个子程序，子程序再分解成多个大模块，大模块再分解成多个小模块，最终分解成一个个函数。 在此我想借用一个象棋对战的例子，例子来源于一篇很老的文章：架构师之路(4)—详解面向对象。以下是采用面向过程的设计思路分解的对战流程图：  将以上每个流程分别用函数实现，问题就解决了。 面向过程的优点主要有两个：一是流程清晰简单；二是性能比较高。尤其是性能，这也是为什么至今很多单片机开发、驱动程序开发、或其他与硬件相关的系统开发等对性能要求很高的软硬件程序依然在用面向过程的方式进行设计和开发。 面向过程的缺点也很明显：一是主程序太重，主程序与模块承担的任务不均衡；二是函数不易扩展，导致其可扩展性、可复用性、可维护性相对都比较差；三是上下层级模块之间的联系太紧密，耦合高，所以模块也难以复用。 面向对象(Object Oriented) 面向过程的思路是“怎么做”，关注于实现细节；而面向对象的思路是“谁来做”，关注于抽象的对象。对象的封装、继承和多态等特性，让我们以更接近现实世界的方式来思考程序设计。面向对象相比面向过程容易实现更好的分离，相应地可扩展性、可复用性、可维护性也会比较高，但同时会牺牲掉一些性能。不过，也因为硬件发展迅猛，所以牺牲的那点性能也不算什么了。 面向对象设计的难点在于抽象，从问题域中抽象出一个个对象，并找出它们之间的关系。好在有SOLID原则和一大堆设计模式指导我们如何更好地设计。也有领域驱动设计的方法论指导我们怎么进行领域建模。 还是象棋对战的例子，用面向对象的设计思路，可以抽象出以下三种对象：  棋手：负责行棋，红黑两方行为一致。 棋盘：负责绘制棋盘画面。 裁判：负责判定吃子、犯规和输赢等。  三者关系如下图： <img src="http://keeganlee.me/architecture/_image/20160621/13-56-53.jpg"...
+        </p>
+
+      </div>
+    </a>
+  
+    <a href="/2017-12-21/RESTful-API" class="catalogue-item">
+      <div>
+        <time datetime="2017-12-21 00:00:00 +0800" class="catalogue-time">December 21, 2017</time>
+        <h1 class="catalogue-title">浅谈RESTful API</h1>
+        <div class="catalogue-line"></div>
+
+        <p>
+          大家都在讨论如何设计 RESTful API，我也来谈谈我对API设计的一些想法。 迄今为止，我个人认为，API设计较为好的是 github，可以去看看 github 的设计，点击这里。 我个人认为，想要设计好一个好看，易理解的API，首先得自己理解，而最基本的，应该是 url 的意义了吧，我相信，很多人都不完全知道 url 到底是啥，代表什么，仅仅是知道，是一个访问地址而已。 wiki 原文: wiki  统一资源定位符（或称统一资源定位器/定位地址、URL地址等[1]，英语：Uniform / Universal Resource Locator，常缩写为URL），有时也被俗称为网页地址（网址）。如同在网络上的门牌，是因特网上标准的资源的地址（Address）。它最初是由蒂姆·伯纳斯-李发明用来作为万维网的地址。现在它已经被万维网联盟编制为因特网标准RFC 1738。 在因特网的历史上，统一资源定位符的发明是一个非常基础的步骤。统一资源定位符的语法是一般的，可扩展的，它使用ASCII代码的一部分来表示因特网的地址。统一资源定位符的开始，一般会标志着一个计算机网络所使用的网络协议。  那么设计一个较为优秀的 RESTful API 应该具备些什么条件呢?...
+        </p>
+
+      </div>
+    </a>
+  
+    <a href="/2017-12-12/create-zipkin" class="catalogue-item">
       <div>
         <time datetime="2017-12-12 00:00:00 +0800" class="catalogue-time">December 12, 2017</time>
-        <h1 class="catalogue-title">Hello</h1>
+        <h1 class="catalogue-title">FastD最佳实践六: 创建Zipkin调用链监控</h1>
         <div class="catalogue-line"></div>
 
         <p>
-          
-
+          zipkin是一个开放源代码分布式的跟踪系统，由Twitter公司开源，它致力于收集服务的定时数据，以解决微服务架构中的延迟问题，包括数据的收集、存储、查找和展现。它的理论模型来自于Google Dapper 论文。 为什么要使用 zipkin 随着业务发展，系统拆分导致系统调用链路愈发复杂一个前端请求可能最终需要调用很多次后端服务才能完成，当整个请求变慢或不可用时，我们是无法得知该请求是由某个或某些后端服务引起的，这时就需要解决如何快读定位服务故障点，以对症下药。于是就有了分布式系统调用跟踪的诞生。而zipkin就是开源分布式系统调用跟踪的佼佼者 安装 zipkin wget -O zipkin.jar 'https://search.maven.org/remote_content?g=io.zipkin.java&amp;a=zipkin-server&amp;v=LATEST&amp;c=exec' java -jar zipkin.jar  安装 Molten 此处提供一个 C 扩展，为php提供对应的数据收集。地址: 点击我 安装参考:...
         </p>
 
       </div>
     </a>
   
-    <a href="/2017-03-29/introducing-tale" class="catalogue-item">
+    <a href="/2017-12-12/create-monitor" class="catalogue-item">
       <div>
-        <time datetime="2017-03-29 00:00:00 +0800" class="catalogue-time">March 29, 2017</time>
-        <h1 class="catalogue-title">Introducing Tale</h1>
+        <time datetime="2017-12-12 00:00:00 +0800" class="catalogue-time">December 12, 2017</time>
+        <h1 class="catalogue-title">FastD最佳实践四: 创建可视化监控</h1>
         <div class="catalogue-line"></div>
 
         <p>
-          Tale is minimal Jekyll theme curated for storytellers. It is designed and developed by myself for a friend who writes short stories. Tale features  Compatible with...
+          原有监控系统  整个系统以 Graphite (carbon + whisper) 为核心, kong 通过 statsd plugin 将服务调用信息发送至 statsd, 而 statsd 则将统计信息通过 Web API 保存至Graphite . 最终在...
         </p>
 
       </div>
     </a>
   
-    <a href="/2017-03-16/example-content" class="catalogue-item">
+    <a href="/2017-12-12/create-log" class="catalogue-item">
       <div>
-        <time datetime="2017-03-16 00:00:00 +0800" class="catalogue-time">March 16, 2017</time>
-        <h1 class="catalogue-title">Example Content</h1>
+        <time datetime="2017-12-12 00:00:00 +0800" class="catalogue-time">December 12, 2017</time>
+        <h1 class="catalogue-title">FastD最佳实践五: 创建ELK日志分析</h1>
         <div class="catalogue-line"></div>
 
         <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas tincidunt ornare nibh, non elementum augue tempus eget. Pellentesque tempus scelerisque iaculis. Nullam interdum ultricies nibh quis sollicitudin. Donec ornare fermentum...
-        </p>
-
-      </div>
-    </a>
-  
-    <a href="/2017-03-10/welcome-to-jekyll" class="catalogue-item">
-      <div>
-        <time datetime="2017-03-10 00:00:00 +0800" class="catalogue-time">March 10, 2017</time>
-        <h1 class="catalogue-title">Welcome to Jekyll!</h1>
-        <div class="catalogue-line"></div>
-
-        <p>
-          You’ll find this post in your _posts directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different...
-        </p>
-
-      </div>
-    </a>
-  
-    <a href="/2017-03-07/the-case-of-the-missing-post" class="catalogue-item">
-      <div>
-        <time datetime="2017-03-07 00:00:00 +0800" class="catalogue-time">March 07, 2017</time>
-        <h1 class="catalogue-title">The Case of the Missing Post</h1>
-        <div class="catalogue-line"></div>
-
-        <p>
-          Kitty power! and sometimes switches in french and say “miaou” just because well why not man running from cops stops to pet cats, goes to jail, yet licks your face...
+          过去咱们开发中，对日志这个环节其实并不太重视，直到有一天，应用出现异常，这个时候才想起来“日志”，但很可惜，为时已晚。 咱们做运维和开发，除了救火，还需要防火，因此一些防范的意识也是非常重要的。 效果图  安装ELK 安装 ELK 是相对简单的，但是后期也需要对其进行优化，适当考虑运维人力，如果觉得个人可以折腾的不放可以尝试。 如果已经存在 ELK 环境，可以直接跳过，进行框架日志配置环节。 点击前往: 中文地址 先决条件: Java 8 sudo add-apt-repository -y...
         </p>
 
       </div>
@@ -114,7 +113,7 @@
 
     <footer>
       <span>
-        &copy; <time datetime="2017-12-12 14:24:38 +0800">2017</time> Jan Huang. Made with Jekyll using the <a href="https://github.com/chesterhow/tale/">Tale</a> theme.
+        &copy; <time datetime="2017-12-21 12:37:32 +0800">2017</time> Jan Huang. Made with Jekyll using the <a href="https://github.com/chesterhow/tale/">Tale</a> theme.
       </span>
     </footer>
   </body>
